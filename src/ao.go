@@ -2,6 +2,8 @@ package main
 
 import (
 	"image/color"
+	// "github.com/hajimehoshi/ebiten/v2"
+	// "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -29,6 +31,7 @@ type Game struct {
 	ballX, ballY   float64
 	ballVX, ballVY float64
 	blocks         []Block
+	// timer          int // 経過フレーム数
 }
 
 func NewGame() *Game {
@@ -53,6 +56,8 @@ func NewGame() *Game {
 }
 
 func (g *Game) Update() error {
+	// g.timer++ // 毎フレーム加算
+	// パドル操作
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
 		g.paddleX -= 4
 	}
@@ -65,10 +70,15 @@ func (g *Game) Update() error {
 	if g.paddleX > screenWidth-paddleWidth {
 		g.paddleX = screenWidth - paddleWidth
 	}
+
+	// 重力加速度
 	gravity := 0.5 / 3
 	g.ballVY += gravity
+	// ボール移動（減衰なし）
 	g.ballX += g.ballVX
 	g.ballY += g.ballVY
+
+	// 小数点誤差による減衰防止
 	minSpeed := 0.01
 	if g.ballVX > 0 && g.ballVX < minSpeed {
 		g.ballVX = minSpeed
@@ -80,6 +90,8 @@ func (g *Game) Update() error {
 	} else if g.ballVY < 0 && g.ballVY > -minSpeed {
 		g.ballVY = -minSpeed
 	}
+
+	// 壁反射
 	if g.ballX < 0 || g.ballX > screenWidth-ballSize {
 		g.ballVX *= -1
 	}
@@ -87,11 +99,15 @@ func (g *Game) Update() error {
 		g.ballY = 0
 		g.ballVY *= -1
 	}
+
+	// パドル反射
 	if g.ballY+ballSize >= screenHeight-paddleHeight &&
 		g.ballX+ballSize >= g.paddleX && g.ballX <= g.paddleX+paddleWidth {
 		g.ballVY *= -1
 		g.ballY = screenHeight - paddleHeight - ballSize
 	}
+
+	// ブロック衝突
 	for i := range g.blocks {
 		b := &g.blocks[i]
 		if b.active &&
@@ -102,8 +118,10 @@ func (g *Game) Update() error {
 			break
 		}
 	}
+
+	// 下に落ちたらリセット
 	if g.ballY > screenHeight {
-		g.ballX = screenWidth - ballSize
+		g.ballX = screenWidth - ballSize // 画面の右上
 		g.ballY = 0
 		g.ballVX = 2
 		g.ballVY = -2
@@ -112,9 +130,15 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	// 背景を白で塗りつぶす
 	screen.Fill(color.White)
+	// タイマー表示（左上）
+	// ebitenutil.DebugPrintAt(screen, "Time: "+fmt.Sprint(g.timer), 10, 10)
+	// パドル
 	ebitenutil.DrawRect(screen, g.paddleX, screenHeight-paddleHeight, paddleWidth, paddleHeight, color.RGBA{0, 0, 255, 255})
+	// ボール
 	ebitenutil.DrawRect(screen, g.ballX, g.ballY, ballSize, ballSize, color.RGBA{255, 0, 0, 255})
+	// ブロック
 	for _, b := range g.blocks {
 		if b.active {
 			ebitenutil.DrawRect(screen, b.x, b.y, blockWidth-2, blockHeight-2, color.RGBA{0, 255, 0, 255})
