@@ -20,7 +20,7 @@ jobs:
       - name: Build WASM
         run: |
           mkdir -p docs
-          GOOS=js GOARCH=wasm go build -o docs/main.wasm ./src/main_wasm.go
+          GOOS=js GOARCH=wasm go build -o docs/main.wasm ./src/*.go
 
       - name: Commit and push WASM
         run: |
