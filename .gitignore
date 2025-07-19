@@ -2,6 +2,7 @@
 /bin/
 *.exe
 *.wasm
+!docs/main.wasm
 __debug_bin*
 
 # VSCode
