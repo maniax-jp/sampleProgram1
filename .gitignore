@@ -1,0 +1,15 @@
+# Go build outputs
+/bin/
+*.exe
+*.wasm
+__debug_bin*
+
+# VSCode
+.vscode/
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+
+# Others
+*.log
