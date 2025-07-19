@@ -1,3 +1,4 @@
+//go:build js || wasm
 //go:build js
 // +build js
 
