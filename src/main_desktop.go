@@ -3,14 +3,15 @@
 package main
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
+   "github.com/hajimehoshi/ebiten/v2"
+   "sampleProgram1/src/common"
 )
 
 func main() {
-	game := NewGame()
-	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Block Breaker")
-	if err := ebiten.RunGame(game); err != nil {
-		panic(err)
-	}
+   game := common.NewGame()
+   ebiten.SetWindowSize(common.ScreenWidth, common.ScreenHeight)
+   ebiten.SetWindowTitle("Block Breaker")
+   if err := ebiten.RunGame(game); err != nil {
+	   panic(err)
+   }
 }
